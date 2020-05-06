@@ -13,7 +13,8 @@ auth-user-pass userpass.txt
 ```
 
 If there's errors with DNS resolution (as there was in my case), make sure the client.ovpn includes
-```script-security 2
+```
+script-security 2
   up /etc/openvpn/update-resolv-conf
   down /etc/openvpn/update-resolv-conf
 ```
