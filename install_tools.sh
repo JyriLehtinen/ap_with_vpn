@@ -36,18 +36,18 @@ sudo apt-get install dnsmasq -y
 sudo DEBIAN_FRONTEND=noninteractive apt install -y netfilter-persistent iptables-persistent
 
 # Configure DHCP
-sudo cat <<EOT >> /etc/dhcpcd.conf
+sudo bash -c 'cat <<EOT >> /etc/dhcpcd.conf
 interface wlan0
     static ip_address=192.168.4.1/24
     nohook wpa_supplicant
-EOT
+EOT'
 
 
-sudo cat <<EOT > /etc/sysctl.d/routed-ap.conf
+sudo bash -c 'cat <<EOT > /etc/sysctl.d/routed-ap.conf
 # https://www.raspberrypi.org/documentation/configuration/wireless/access-point-routed.md
 # Enable IPv4 routing
 net.ipv4.ip_forward=1
-EOT
+EOT'
 
 #sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 sudo iptables -t nat -A POSTROUTING -o tun0 -j MASQUERADE
@@ -58,14 +58,14 @@ sudo netfilter-persistent save
 
 sudo mv /etc/dnsmasq.conf /etc/dnsmasq.conf.orig
 
-sudo cat <<EOT > /etc/dnsmasq.conf
+sudo bash -c 'cat <<EOT > /etc/dnsmasq.conf
 interface=wlan0 # Listening interface
 dhcp-range=192.168.4.2,192.168.4.20,255.255.255.0,24h
                 # Pool of IP addresses served via DHCP
 domain=wlan     # Local wireless DNS domain
 address=/gw.wlan/192.168.4.1
 	                # Alias for this router
-EOT
+EOT'
 
 sudo rfkill unblock wlan
 
