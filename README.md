@@ -6,6 +6,11 @@ Make sure you have the openvpn client installed and configuration file "client.o
 sudo apt-get install openvpn
 sudo openvpn client.openvpn
 ```
+If the server requires username and password, include them in auth-file named "userpass.txt"
+The conf file should have the line
+```
+auth-user-pass userpass.txt
+```
 
 If there's errors with DNS resolution (as there was in my case), make sure the client.ovpn includes
 ```script-security 2
@@ -17,4 +22,4 @@ Edit the AP parameters (SSID, password) in hostapd.conf
 
 Then, you may run the shell script to install and configure the access point with forwarding to the virtual adapter.
 
-Reboot at the end and that should be it. Just connect your devices to the new WiFi AP and their traffic should be routed through the VPN client
+Reboot at the end, make sure the ethernet cable is plugged and that should be it. Just connect your devices to the new WiFi AP and their traffic should be routed through the VPN client
