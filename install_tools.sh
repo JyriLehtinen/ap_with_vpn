@@ -1,9 +1,26 @@
 #!/bin/bash
 
-sudo apt-get install openvpn -y
-sudo cp client.ovpn /etc/openvpn/
+echo "Please read through the README before running the script for the first time"
+read -r -p "Have you installed OpenVPN and checked that your client connects properly? [Y/n]" response
+response=${response,,} # tolower
+if [[ $response =~ ^(yes|y| ) ]] || [[ -z $response ]]; then
+	read -r -p "You're not bluffing, are you? [Y/n]" confirm
+	confirm=${confirm,,} # tolower
+	if [[ $confirm =~ ^(no|n) ]]; then
+		echo "Alright then... "	
+	else
+		echo "Go a head a do it, then try again"
+		exit 0
+	fi
+else
+	exit 0
+fi
+
+sudo cp client.ovpn /etc/openvpn/autoclient.conf
 sudo cp userpass.txt /etc/openvpn/
 sudo sed -i 's/#AUTOSTART="all"/AUTOSTART="all"/g' /etc/default/openvpn
+
+sudo systemctl enable openvpn@autoclient.service
 # Following https://www.raspberrypi.org/documentation/configuration/wireless/access-point-routed.md
 
 sudo apt-get update && sudo apt-get install hostapd -y
@@ -32,9 +49,9 @@ sudo cat <<EOT > /etc/sysctl.d/routed-ap.conf
 net.ipv4.ip_forward=1
 EOT
 
-sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+#sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 sudo iptables -t nat -A POSTROUTING -o tun0 -j MASQUERADE
-sudo iptables -A FORWARD -s 192.168.4.0/24 -i wlan0 -o eth0 -m conntrack --ctstate NEW -j REJECT
+#sudo iptables -A FORWARD -s 192.168.4.0/24 -i wlan0 -o eth0 -m conntrack --ctstate NEW -j REJECT
 sudo iptables -A FORWARD -s 192.168.4.0/24 -i wlan0 -o tun0 -m conntrack --ctstate NEW -j ACCEPT
 
 sudo netfilter-persistent save
@@ -54,3 +71,5 @@ sudo rfkill unblock wlan
 
 sudo cp hostapd.conf /etc/hostapd/hostapd.conf
 
+
+echo "Now go ahead and reboot the Pi"
