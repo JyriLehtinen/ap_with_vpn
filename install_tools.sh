@@ -36,6 +36,7 @@ sudo apt-get install dnsmasq -y
 sudo DEBIAN_FRONTEND=noninteractive apt install -y netfilter-persistent iptables-persistent
 
 # Configure DHCP
+sudo touch /etc/dhcpcd.conf
 sudo bash -c 'cat <<EOT >> /etc/dhcpcd.conf
 interface wlan0
     static ip_address=192.168.4.1/24
@@ -43,6 +44,7 @@ interface wlan0
 EOT'
 
 
+sudo touch /etc/sysctl.d/routed-ap.conf
 sudo bash -c 'cat <<EOT > /etc/sysctl.d/routed-ap.conf
 # https://www.raspberrypi.org/documentation/configuration/wireless/access-point-routed.md
 # Enable IPv4 routing
@@ -58,6 +60,7 @@ sudo netfilter-persistent save
 
 sudo mv /etc/dnsmasq.conf /etc/dnsmasq.conf.orig
 
+sudo touch /etc/dnsmasq.conf
 sudo bash -c 'cat <<EOT > /etc/dnsmasq.conf
 interface=wlan0 # Listening interface
 dhcp-range=192.168.4.2,192.168.4.20,255.255.255.0,24h
